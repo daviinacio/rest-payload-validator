@@ -1,0 +1,26 @@
+{
+  "name": "rest-payload-validator",
+  "version": "0.0.1",
+  "description": "Easy validator for rest payload",
+  "main": "src/validator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daviinacio/rest-payload-validator.git"
+  },
+  "keywords": [
+    "rest",
+    "validator",
+    "object",
+    "javascript"
+  ],
+  "author": "daviinacio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daviinacio/rest-payload-validator/issues"
+  },
+  "homepage": "https://github.com/daviinacio/rest-payload-validator#readme",
+  "type": "module"
+}
