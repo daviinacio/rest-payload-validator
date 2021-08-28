@@ -1,6 +1,6 @@
-import RestPayloadValidatorSyntaxError from "./exceptions.js"
-import templates from "./templates.js"
-import utils from "./utils.js"
+const RestPayloadValidatorSyntaxError = require("./exceptions.js")
+const templates = require("./templates.js")
+const utils = require("./utils.js")
 
 const rule_validators = Object.fromEntries(templates)
 
@@ -190,4 +190,4 @@ const Validator = {
   custom
 }
 
-export default Validator
+module.exports = Validator

@@ -1,4 +1,4 @@
-import utils from "./utils.js"
+const utils = require("./utils.js")
 
 const templates = []
 
@@ -77,4 +77,4 @@ templates.push(['email', (value, key) => {
 //     return ``
 // }])
 
-export default templates
+module.exports = templates

@@ -16,7 +16,7 @@ const isNumericField = (value, all_rules) => {
   return ['integer', 'float', 'number'].some(t => all_rules.indexOf(t) >= 0) || typeof value === 'number'
 }
 
-export default {
+module.exports = {
   getGlobalFields,
   isNumericField,
   isStringField

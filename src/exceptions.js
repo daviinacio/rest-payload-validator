@@ -1,5 +1,7 @@
-export default class RestPayloadValidatorSyntaxError extends Error{
+class RestPayloadValidatorSyntaxError extends Error{
   constructor(message){
     super(message)
   }
 }
+
+module.exports = RestPayloadValidatorSyntaxError
