@@ -1,3 +1,4 @@
+import RestPayloadValidatorSyntaxError from "./exceptions.js"
 import templates from "./templates.js"
 import utils from "./utils.js"
 
@@ -5,6 +6,9 @@ const rule_validators = Object.fromEntries(templates)
 
 const build = ({ values = {}, rules = {}, messages = {} }) => {
   const validation_results = {}
+
+  if(typeof values !== 'object' || typeof rules !== 'object' || typeof messages !== 'object')
+    throw new RestPayloadValidatorSyntaxError("value, rules and messages must be object")
 
   function alright(event){
     if(typeof rules === 'object' && !Array.isArray(rules)){
@@ -23,8 +27,8 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
             }
             else {
               if(rule === '')
-                throw new Error(`RestPayloadValidator: Syntax error '${rules[key]}' field: '${key}'`)
-              else throw new Error(`RestPayloadValidator: Rule validator ${rule} not found`)
+                throw new RestPayloadValidatorSyntaxError(`'${rules[key]}' field: '${key}'`)
+              else throw new RestPayloadValidatorSyntaxError(`Validator '${rule}' not found`)
             }
           });
         }
@@ -46,7 +50,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
                   index, value
                 ]]),
                 rules: Object.fromEntries([[
-                  index, rules[key][0]
+                  index, rules[key][index in rules[key] ? index : 0]
                 ]]),
 
                 messages: {
@@ -94,28 +98,6 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
         }
       })
     }
-    //
-    // Single value validation
-    // else
-    // if(typeof rules === 'string' && rules in rule_validators){
-    //   const field_rules = rules.split('|')
-    
-    //   field_rules.forEach(rule_row => {
-    //     const [rule, param] = rule_row.split(':')
-        
-    //     if(rule in rule_validators){
-    //       const result = rule_validators[rule](values, '', param, rule)
-    
-    //       if(result)
-    //         validation_results[`self.${rule}`] = result
-    //     }
-    //     else {
-    //       if(rule === '')
-    //         throw new Error(`RestPayloadValidator: Syntax error '${rules[key]}' field: '${key}'`)
-    //       else throw new Error(`RestPayloadValidator: Rule validator ${rule} not found`)
-    //     }
-    //   });
-    // }
 
     const passed = Object.keys(validation_results).length === 0
 
