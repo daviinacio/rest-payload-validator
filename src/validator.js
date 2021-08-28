@@ -44,7 +44,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
             const global_messages = utils.getGlobalFields(messages)
             const all_messages = messages[`${key}.*`] || (messages[key] || {})['*'] || {}
 
-            values[key].forEach((value, index) => {
+            values[key] || [].forEach((value, index) => {
               Validator.build({
                 values: Object.fromEntries([[
                   index, value
