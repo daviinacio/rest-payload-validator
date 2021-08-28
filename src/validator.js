@@ -7,23 +7,34 @@ const build = ({ values, rules, messages }) => {
 
   function alright(event){
     Object.keys(rules).forEach(key => {
-      const field_rules = rules[key].split('|')
+      if(typeof rules[key] === 'string'){
+        const field_rules = rules[key].split('|')
   
-      field_rules.forEach(rule_row => {
-        const [rule, param] = rule_row.split(':')
-        
-        if(rule in rule_validators){
-          const result = rule_validators[rule](values[key], key, param, rule)
-    
-          if(result)
-            validation_results[`${key}.${rule}`] = result
-        }
-        else {
-          if(rule === '')
-            throw new Error(`RestPayloadValidator: Syntax error '${rules[key]}' field: '${key}'`)
-          else throw new Error(`RestPayloadValidator: Rule validator ${rule} not found`)
-        }
-      });
+        field_rules.forEach(rule_row => {
+          const [rule, param] = rule_row.split(':')
+          
+          if(rule in rule_validators){
+            const result = rule_validators[rule](values[key], key, param, rule)
+      
+            if(result)
+              validation_results[`${key}.${rule}`] = result
+          }
+          else {
+            if(rule === '')
+              throw new Error(`RestPayloadValidator: Syntax error '${rules[key]}' field: '${key}'`)
+            else throw new Error(`RestPayloadValidator: Rule validator ${rule} not found`)
+          }
+        });
+      }
+      else
+      // Recursion for sub objects
+      if(typeof rules[key] === 'object'){
+        Validator.build({values: values[key] || {}, rules: rules[key] || {}, messages: messages[key] || {}})
+        .alright(() =>{})
+        .failed((errors) => {
+          validation_results[`${key}`] = errors
+        })
+      }
     })
 
     const passed = Object.keys(validation_results).length === 0
@@ -47,6 +58,9 @@ const build = ({ values, rules, messages }) => {
     const validation_errors = {}
 
     Object.keys(validation_results).forEach(error_key => {
+      if(typeof rules[error_key] === 'object')
+        validation_errors[error_key] = validation_results[error_key]
+      else
       if(error_key in messages)
         validation_errors[error_key.split('.')[0]] = messages[error_key]
       else

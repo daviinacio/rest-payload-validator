@@ -11,7 +11,7 @@ templates.push(['integer', (value, key) => {
 }])
 
 templates.push(['float', (value, key) => {
-  if(typeof value !== 'undefined' && typeof value !== 'number' || parseFloat(value) === NaN)
+  if(typeof value !== 'undefined' && (typeof value !== 'number' || parseFloat(value) === NaN))
     return `Field '${key}' is not a valid 'float' value`
 }])
 
@@ -38,20 +38,16 @@ templates.push(['array', (value, key) => {
 templates.push(['min', (value, key, param) => {
   if(typeof value !== 'undefined' && typeof value === 'string' && value.length < param)
     return `The minimum length of '${key}' is '${param}' characters`
+    else
+  if(typeof value !== 'undefined' && typeof value === 'number' && value < parseInt(param))
+    return `Field '${key}' must be major then '${param}'`
 }])
 
 templates.push(['max', (value, key, param) => {
   if(typeof value !== 'undefined' && typeof value === 'string' && value.length > param)
     return `The maximum length of '${key}' is '${param}' characters`
-}])
-
-templates.push(['major', (value, key, param) => {
-  if(typeof value === 'number' && value < parseInt(param))
-    return `Field '${key}' must be major then '${param}'`
-}])
-
-templates.push(['minor', (value, key, param) => {
-  if(typeof value === 'number' && value > parseInt(param))
+  else
+  if(typeof value !== 'undefined' && typeof value === 'number' && value > parseInt(param))
     return `Field '${key}' must be minor then '${param}'`
 }])
 
