@@ -1,7 +1,9 @@
+import utils from "./utils.js"
+
 const templates = []
 
 templates.push(['required', (value, key) => {
-  if(typeof value === 'undefined')
+  if(typeof value === 'undefined' || (typeof value === 'string' && value.length === 0))
     return `Field '${key}' is required`
 }])
 
@@ -35,20 +37,25 @@ templates.push(['array', (value, key) => {
     return `Field '${key}' is not a valid 'array' value`
 }])
 
-templates.push(['min', (value, key, param) => {
-  if(typeof value !== 'undefined' && typeof value === 'string' && value.length < param)
-    return `The minimum length of '${key}' is '${param}' characters`
-    else
-  if(typeof value !== 'undefined' && typeof value === 'number' && value < parseInt(param))
-    return `Field '${key}' must be major then '${param}'`
+templates.push(['object', (value, key) => {
+  if(typeof value !== 'undefined' && (typeof value !== 'object' || Array.isArray(value)))
+    return `Field '${key}' is not a valid 'object' value`
 }])
 
-templates.push(['max', (value, key, param) => {
-  if(typeof value !== 'undefined' && typeof value === 'string' && value.length > param)
+templates.push(['min', (value, key, param, rule, all_rules) => {
+  if(typeof value !== 'undefined' && utils.isStringField(value, all_rules) >= 0 && value.length < param)
+    return `The minimum length of '${key}' is '${param}' characters`
+    else
+  if(typeof value !== 'undefined' && utils.isNumericField(value, all_rules) && value < parseInt(param))
+    return `Field '${key}' must be greater than or equal to '${param}'`
+}])
+
+templates.push(['max', (value, key, param, rule, all_rules) => {
+  if(typeof value !== 'undefined' && utils.isStringField(value, all_rules) >= 0 && value.length > param)
     return `The maximum length of '${key}' is '${param}' characters`
   else
-  if(typeof value !== 'undefined' && typeof value === 'number' && value > parseInt(param))
-    return `Field '${key}' must be minor then '${param}'`
+  if(typeof value !== 'undefined' && utils.isNumericField(value, all_rules) && value > parseInt(param))
+    return `Field '${key}' must be less than or equal to '${param}'`
 }])
 
 templates.push(['email', (value, key) => {
