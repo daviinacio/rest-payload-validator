@@ -1,6 +1,6 @@
 {
   "name": "rest-payload-validator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Easy validator for rest payload",
   "main": "src/validator.js",
   "bin": "src/validator.js",
