@@ -1,7 +1,7 @@
 {
   "name": "rest-payload-validator",
-  "version": "1.0.3",
-  "description": "Easy validator for rest payload",
+  "version": "1.0.4",
+  "description": "Easy and powerful payload validator for your nodejs projects",
   "main": "src/validator.js",
   "bin": "src/validator.js",
   "scripts": {
