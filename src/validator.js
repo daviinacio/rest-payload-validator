@@ -20,7 +20,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
             const [rule, param] = rule_row.split(':')
             
             if(rule in rule_validators){
-              const result = rule_validators[rule](values[key], key, param, rule, field_rules)
+              const result = rule_validators[rule](key, values[key], param, rule, field_rules)
         
               if(result)
                 validation_results[`${key}.${rule}`] = result
@@ -34,7 +34,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
         }
         else
         if(Array.isArray(rules[key])){
-          const validate_array = rule_validators.array(values[key], key)
+          const validate_array = rule_validators.array(key, values[key])
           
           if(!validate_array){
             if(rules[key].length === 0) return;
@@ -76,7 +76,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
         else
         // Recursion for sub objects
         if(typeof rules[key] === 'object'){
-          const validate_object = rule_validators.object(values[key], key)
+          const validate_object = rule_validators.object(key, values[key])
           
           if(!validate_object){
             const global_messages = utils.getGlobalFields(messages)
