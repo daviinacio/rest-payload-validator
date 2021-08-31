@@ -16,7 +16,6 @@ npm install --save rest-payload-validator
 ```shell
 yarn add rest-payload-validator
 ```
-
 ## Usage
 ### Basic validator structure
 ```javascript
@@ -40,11 +39,15 @@ Validator.builder()
 /* Check validation result */
 
 // Using boolean condition
-if(validator_instance.alright()){}
-else {}
+if(validator_instance.alright()){
+  // ...
+}
+else {
+  console.log(validator_instance.errors)
+}
 
 // Using fallbacks
-.alright(() => {})
+.alright((data) => {})
 .failed((errors) => {})
 ```
 
@@ -84,7 +87,7 @@ Validator.build({
     }
   }
 })
-.alright(() => {
+.alright((data) => {
   // ...
 })
 .failed((errors) => {
@@ -127,7 +130,7 @@ Validator.build({
     }
   }
 })
-.alright(() => {
+.alright((data) => {
   // ...
 })
 .failed((errors) => {
@@ -138,7 +141,7 @@ Validator.build({
 ### Example: Lists, Collections and Entries
 
 ```javascript
-/* Array of values*/
+/* Array of values (List)*/
 
 Validator.build({
   values: {
@@ -161,7 +164,7 @@ Validator.build({
     }
   }
 })
-.alright(() => {
+.alright((data) => {
   // ...
 })
 .failed((errors) => {
@@ -170,7 +173,7 @@ Validator.build({
 ```
 
 ```javascript
-/* Array of objects */
+/* Array of objects (Collection) */
 
 Validator.build({
   values: {
@@ -209,7 +212,7 @@ Validator.build({
     }
   }
 })
-.alright(() => {
+.alright((data) => {
   // ...
 })
 .failed((errors) => {
@@ -255,12 +258,45 @@ Validator.build({
     }
   }
 })
-.alright(() => {
+.alright((data) => {
   // ...
 })
 .failed((errors) => {
   // ...
 })
+```
+
+### Revalidate
+```javascript
+const values = {
+  variable1: 1,
+  variable2: 2
+}
+
+const validation = Validator.build({
+  values,
+  rules: {
+    'variable1': "string",
+    'variable2': "string"
+  }
+})
+
+// First check without errors
+if(validation.alright()){
+  return;
+}
+
+// Change values
+if('variable1.string' in validation.errors)
+  values.variable1 = "text-value1"
+
+if('variable2.string' in validation.errors)
+  values.variable2 = "text-value2"
+
+// Revalidate
+if(validation.alright()){
+  return;
+}
 ```
 
 ## Messages
@@ -428,6 +464,7 @@ Global messages replace all messages in the same or lower scope.
 Local messages have higher priority.
 ```javascript
 {
+  'rule1': "Custom message"
   'rule2': "Custom message (will not appear)",
 
   'field': {
@@ -458,7 +495,7 @@ You can implement your own validations. Validation passes when no error message 
 /* Custom validation template */
 
 Validator.custom('custom_rule', (key, value, param) => {
-  if(/* condition ***/)
+  if(/* condition */)
     return /* Error message */;
   /* Valid result */
 })

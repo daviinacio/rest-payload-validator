@@ -6,11 +6,15 @@ const rule_validators = Object.fromEntries(templates)
 
 const build = ({ values = {}, rules = {}, messages = {} }) => {
   const validation_results = {}
+  const validation_alright = {}
 
   if(typeof values !== 'object' || typeof rules !== 'object' || typeof messages !== 'object')
     throw new RestPayloadValidatorSyntaxError("value, rules and messages must be object")
 
   function alright(event){
+    Object.keys(validation_results).forEach(key => delete validation_results[key])
+    Object.keys(validation_alright).forEach(key => delete validation_alright[key])
+
     if(typeof rules === 'object' && !Array.isArray(rules)){
       Object.keys(rules).forEach(key => {
         if(typeof rules[key] === 'string'){
@@ -24,6 +28,8 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
         
               if(result)
                 validation_results[`${key}.${rule}`] = result
+              else
+                validation_alright[`${key}`] = values[key]
             }
             else {
               if(rule === '')
@@ -39,6 +45,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
           if(!validate_array){
             if(rules[key].length === 0) return;
 
+            validation_alright[key] = []
             validation_results[key] = {}
 
             const global_messages = utils.getGlobalFields(messages)
@@ -50,7 +57,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
                   index, value
                 ]]),
                 rules: Object.fromEntries([[
-                  index, rules[key][index in rules[key] ? index : 0]
+                  index, rules[key][index in rules[key] ? index : rules[key].length -1]
                 ]]),
 
                 messages: {
@@ -59,7 +66,10 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
                   ...messages[key],
                 }
               })
-              .alright(() => {})
+              .alright((data) => {
+                if(index in data)
+                  validation_alright[key][index] = data[index]
+              })
               .failed((errors) => {
                 Object.keys(errors).forEach(error_key => {
                   validation_results[key][error_key]
@@ -67,7 +77,10 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
                 })
               })
             })
-
+            
+            if(validation_alright[key].length === 0)
+                delete validation_alright[key]
+            
             if(Object.keys(validation_results[key]).length === 0)
                 delete validation_results[key]
           }
@@ -89,7 +102,9 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
                 ...messages[key]
               }
             })
-            .alright(() =>{})
+            .alright((data) => {
+              validation_alright[`${key}`] = data
+            })
             .failed((errors) => {
               validation_results[`${key}`] = errors
             })
@@ -102,7 +117,7 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
     const passed = Object.keys(validation_results).length === 0
 
     if(typeof event === 'function'){
-      if(passed) event()
+      if(passed) event(validation_alright)
       return {
         failed
       }
@@ -117,6 +132,8 @@ const build = ({ values = {}, rules = {}, messages = {} }) => {
   }
 
   function errors(){
+    if(Object.keys(validation_results).length === 0) alright()
+
     const validation_errors = {}
 
     Object.keys(validation_results).forEach(error_key => {
