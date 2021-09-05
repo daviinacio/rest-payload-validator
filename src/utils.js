@@ -8,11 +8,11 @@ const getGlobalFields = (object) => {
   ])))
 }
 
-const isStringField = (value, all_rules) => {
+const isStringField = (value, all_rules = []) => {
   return ['string'].some(t => all_rules.indexOf(t) >= 0) || typeof value === 'string'
 }
 
-const isNumericField = (value, all_rules) => {
+const isNumericField = (value, all_rules = []) => {
   return ['integer', 'float', 'number'].some(t => all_rules.indexOf(t) >= 0) || typeof value === 'number'
 }
 

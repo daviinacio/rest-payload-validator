@@ -1,11 +1,12 @@
 {
   "name": "rest-payload-validator",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Easy and powerful payload validator for your nodejs projects",
   "main": "src/validator.js",
   "bin": "src/validator.js",
   "scripts": {
-    "start": "node src/validator.js"
+    "start": "node src/validator.js",
+    "publish": "npm publish && git push"
   },
   "repository": {
     "type": "git",

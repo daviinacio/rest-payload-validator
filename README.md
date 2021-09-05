@@ -488,6 +488,11 @@ Rule         |  Parameter  | Description
 **min**      | **integer** | This validation have 2 modes. When in a **string** field, check if the length of the text is greater than *@param*. In a **numeric** field, check if the value is greater than *@param*.
 **max**      | **integer** | This validation have 2 modes. When in a **string** field, check if the text length is less than *@param*. In a **numeric** field, check if the value is less than *@param*.
 
+### Extra validations
+Rule         |  Parameter  | Description
+-------------|-------------|------------
+**cpf**      | N/A         | Check if the field is a valid **cpf** (Brazilian Natural Persons Register) value. 
+
 ## Custom validation
 You can implement your own validations. Validation passes when no error message is returned.
 
@@ -498,6 +503,15 @@ Validator.custom('custom_rule', (key, value, param) => {
   if(/* condition */)
     return /* Error message */;
   /* Valid result */
+})
+
+Validator.build({
+  values: {
+    field: 123
+  },
+  rules: {
+    'field': "custom_rule"
+  }
 })
 ```
 

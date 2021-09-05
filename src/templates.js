@@ -64,6 +64,30 @@ templates.push(['email', (key, value) => {
     return `Field '${key}' is not a valid 'email' value`
 }])
 
+templates.push(['cpf', (key, value, param) => {
+  if(typeof value === 'undefined' || (typeof value === 'string' && value.length === 0)) return;
+
+  const calcValidatorDigit = (digits) => {
+    const calc = digits.reduce((ac, value, index) => {
+      return ac + (value * ((digits.length + 1) - index))
+    }, 0) * 10 % 11
+
+    return calc === 10 ? 0 : calc
+  }
+
+  const cpf = Array.from(value.toString().replace(/[^0-9]+/g, '').padStart(11, 0).substr(0, 11))
+
+  const [digit1, digit2] = cpf.slice(9, 11)
+  
+  const digit1calc = calcValidatorDigit(cpf.slice(0, 9))
+  const digit2calc = calcValidatorDigit(cpf.slice(0, 10))
+  const isFalseValid = cpf.every((v, i, a) => v === a[0])
+
+  if(isFalseValid || digit1 != digit1calc || digit2 != digit2calc)
+    return `Field '${key}' is not a valid 'cpf' value`
+}])
+
+
 // templates.push(['unique', (key, value, param) => {
 //   if(typeof value !== 'undefined' && param in prisma){
 //     if(prisma[param].count({ where: Object.fromEntries([[ key, value ]]) }) > 0)
